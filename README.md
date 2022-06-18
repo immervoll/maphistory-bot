@@ -9,6 +9,7 @@
         <a href="https://github.com/immervoll/maphistory-bot"><strong>Explore the docs 📖</strong></a>
         <a href="https://github.com/immervoll/maphistory-bot/issues">Report Bug 🐛</a>
         <a href="https://github.com/immervoll/maphistory-bot/issues">Request Feature ✋</a>
+        <a href="https://github.com/immervoll/maphistory-bot/releases/">Latest Release 📥</a>
     </p>
 </p>
 
@@ -99,7 +100,7 @@ _For more examples, please refer to the [Documentation](https://github.com/immer
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](BEST-README/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/immervoll/maphistory-bot/issues) for a list of proposed features (and known issues).
 
 
 
@@ -118,7 +119,7 @@ Contributions are what make the open source community such an amazing place to b
 <!-- CONTACT -->
 ## Contact
 
-Immervoll - [@immervoll](https://twitter.com/immervoll)
+Immervoll - [@immervoll](https://twitter.com/allswabbelvull)
 
 Project https://github.com/immervoll/maphistory-bot: [https://github.com/immervoll/maphistory-bot](https://github.com/immervoll/maphistory-bot)
 
