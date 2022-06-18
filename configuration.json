@@ -1,0 +1,9 @@
+{
+"invite": "https: //discord.com/api/oauth2/authorize?client_id=987109021335044106&permissions=2214685760&scope=bot",
+ "TOKEN": "OTg3MTA5MDIxMzM1MDQ0MTA2.Gv5uwu.Ofvex1VCn7dpxXUqN1JQI4zMVP5VWmxl3vl5yQ",
+ "PREFIX": "!",
+ "SERVER": {
+    "IP": "194.26.183.182",
+    "PORT": 27165
+    }
+}
