@@ -13,23 +13,23 @@ with open("configuration.json", "r") as config:
     TOKEN = DATA["TOKEN"]
     PREFIX = DATA["PREFIX"]
     SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
-    INTERVAL = 2.0  # Interval in seconds to check the server
+    INTERVAL = 10.0  # Interval in seconds to check the server
     FIELPATH = "./history.txt"  # Path to the file to save the history
 
 bot = commands.Bot(PREFIX)
+last_map = ""
 
 
 @bot.event
 async def on_ready():
     logging.log(logging.INFO, f"We have logged in as {bot.user}")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History"))
-
-
-last_map = ""
+    queryServer.start(last_map)
 
 
 @tasks.loop(seconds=INTERVAL)
-async def queryServer(sc, last_map):
+async def queryServer(last_map):
+    logging.log(logging.DEBUG, "Entering Query loop")
     try:
         logging.log(
             logging.INFO, f"Connecting to {SERVERADDRESS[0]}:{SERVERADDRESS[1]}")
@@ -41,7 +41,11 @@ async def queryServer(sc, last_map):
             if current_map != "" and last_map != current_map:
                 file.write(f"{current_map}\n")
                 last_map = current_map
-
+                
+        try:
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History | {current_map}"))
+        except:
+            pass
     except Exception as e:
         logging.log(logging.ERROR, f"Couldnt complete a2s query. {e}")
 
@@ -51,14 +55,14 @@ def get_last_10_maps():
         return file.readlines()[-10:]
 
 
-@commands.command(name="history", aliases=["maps"])
-async def history(self, ctx: commands.Context):
-
-    last_10_maps = get_last_10_maps()
+@bot.command(name="history", aliases=["maps"])
+async def history(ctx: commands.Context):
+    logging.log(logging.INFO, f"{ctx.author} requested the map history")
+    last_10_maps = "".join(get_last_10_maps())
     embed = discord.Embed(title="Map History", description="", color=0xff0000)
     embed.set_author(name="Map History Bot",
                      url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="Last 10 Maps", value="{last_10_maps}", inline=False)
+    embed.add_field(name="Last 10 Maps", value=f"{last_10_maps}", inline=False)
     embed.set_footer(text="by immervoll")
     await ctx.send(f"{ctx.author.mention} here is the servers map history", embed=embed)
 
