@@ -1,6 +1,6 @@
 FROM python:3.9.7
 
-MAINTAINER Immervoll - github.com/immervoll
+LABEL Maintainer="Immervoll - github.com/immervoll"
 
 ENV TOKEN="TOKENHERE"
 ENV PREFIX="!"
