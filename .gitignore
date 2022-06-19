@@ -352,3 +352,5 @@ configuration.json
 ./configuration.json
 history.txt
 ./history.txt
+./docker-compose.yml
+docker-compose.yml
