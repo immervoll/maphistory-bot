@@ -65,13 +65,23 @@ pip3 install python-a2s
 ### Installation
 
 1. Get a discord Bot free Token at [Discord Developer Portal](https://discord.com/developers/applications)
-2. Clone the repo
+2. Clone the repo and create a `configuration.json`
 
 ```sh
 gh repo clone immervoll/maphistory-bot
 ```
+```json
+{
+    "TOKEN": "",
+    "PREFIX": "!",
+    "SERVER": {
+        "IP": "",
+        "PORT": 27165
+    }
+}
+```
 
-1. Install all the required packages
+3. Install all the required packages
 
 ```sh
 pip3 install python-a2s, discord.py
