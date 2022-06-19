@@ -13,7 +13,7 @@ with open("configuration.json", "r") as config:
     TOKEN = DATA["TOKEN"]
     PREFIX = DATA["PREFIX"]
     SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
-    INTERVAL = 2.0 #600.0  # Interval in seconds to check the server
+    INTERVAL = 600.0  # Interval in seconds to check the server
     FIELPATH = "./history.txt"  # Path to the file to save the history
 
 bot = commands.Bot(PREFIX)
