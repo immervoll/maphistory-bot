@@ -13,22 +13,22 @@ with open("configuration.json", "r") as config:
     TOKEN = DATA["TOKEN"]
     PREFIX = DATA["PREFIX"]
     SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
-    INTERVAL = 600.0  # Interval in seconds to check the server
+    INTERVAL = 2.0 #600.0  # Interval in seconds to check the server
     FIELPATH = "./history.txt"  # Path to the file to save the history
 
 bot = commands.Bot(PREFIX)
-last_map = ""
-
+last_map: str = ""
 
 @bot.event
 async def on_ready():
     logging.log(logging.INFO, f"We have logged in as {bot.user}")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History"))
-    queryServer.start(last_map)
+    queryServer.start()
 
 
 @tasks.loop(seconds=INTERVAL)
-async def queryServer(last_map):
+async def queryServer():
+    global last_map
     logging.log(logging.DEBUG, "Entering Query loop")
     try:
         logging.log(
@@ -36,12 +36,17 @@ async def queryServer(last_map):
 
         query = a2s.info(SERVERADDRESS)
         current_map = query.map_name
-        logging.log(logging.INFO, f"Current map: {current_map}")
-        with open(FIELPATH, "a") as file:
-            if current_map != "" and last_map != current_map:
+        
+        if not current_map == last_map:
+            with open(FIELPATH, "a") as file:
                 file.write(f"{current_map}\n")
-                last_map = current_map
-                
+                logging.log(logging.INFO, f"Saved map to File")
+                logging.log(logging.INFO, f"Current map: {current_map}")
+                logging.log(logging.INFO, f"Last map: {last_map}")
+            
+            last_map = current_map
+        else:
+            logging.log(logging.INFO, f"Current map: {current_map}")
         try:
             await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History | {current_map}"))
         except:
