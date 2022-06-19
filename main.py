@@ -53,7 +53,9 @@ async def queryServer(last_map):
 def get_last_10_maps():
     with open(FIELPATH, "r") as file:
         return file.readlines()[-10:]
-
+def get_current_map():
+    with open(FIELPATH, "r") as file:
+        return file.readlines()[-1]
 
 @bot.command(name="history", aliases=["maps"])
 async def history(ctx: commands.Context):
@@ -62,6 +64,7 @@ async def history(ctx: commands.Context):
     embed = discord.Embed(title="Map History", description="", color=0xff0000)
     embed.set_author(name="Map History Bot",
                      url="https://github.com/immervoll/maphistory-bot")
+    embed.add_field(name="Current Map", value="".join(get_current_map()), inline=False)
     embed.add_field(name="Last 10 Maps", value=f"{last_10_maps}", inline=False)
     embed.set_footer(text="by immervoll")
     await ctx.send(f"{ctx.author.mention} here is the servers map history", embed=embed)
