@@ -61,7 +61,10 @@ pip3 install discord.py
 ```sh
 pip3 install python-a2s
 ```
-
+- jaraco.docker
+```sh
+pip3 install jaraco.docker
+```
 ### Installation
 
 1. Get a discord Bot free Token at [Discord Developer Portal](https://discord.com/developers/applications)
@@ -84,7 +87,7 @@ gh repo clone immervoll/maphistory-bot
 3. Install all the required packages
 
 ```sh
-pip3 install python-a2s, discord.py
+pip3 install -r requirements.txt
 ```
 
 4. Enter your Token in `configiguration.json`
