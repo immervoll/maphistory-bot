@@ -5,6 +5,7 @@ import discord
 import a2s
 import logging
 import os
+from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 
 if is_docker():
@@ -18,10 +19,11 @@ else:
         TOKEN = DATA["TOKEN"]
         PREFIX = DATA["PREFIX"]
         SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
-
+        MESSAGEID = DATA["MESSAGEID"]
 
 INTERVAL = 600.0  # Interval in seconds to check the server
 FIELPATH = "./history.txt"  # Path to the file to save the history
+
 
 bot = commands.Bot(PREFIX)
 last_map: str = ""
@@ -62,6 +64,15 @@ async def queryServer():
     except Exception as e:
         logging.log(logging.ERROR, f"Couldnt complete a2s query. {e}")
 
+    finally:
+        embed=discord.Embed(title="Map History", description="", color=0xff0000)
+        embed.set_author(name="Map History Bot", url="https://github.com/immervoll/maphistory-bot", icon_url="icon")
+        embed.add_field(name="Current Map", value=f"{current_map}", inline=False)
+        embed.add_field(name="Last 10 Maps", value=f"{last_map}", inline=False)
+        from datetime import datetime
+        embed.set_footer(text=f"Last update: {datetime.now()}")
+        
+        await ctx.send(embed=embed)
 
 def get_last_10_maps():
     with open(FIELPATH, "r") as file:
