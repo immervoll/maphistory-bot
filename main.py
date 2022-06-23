@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 if is_docker():
     TOKEN = os.environ['TOKEN']
     PREFIX = os.environ['PREFIX']
-    SERVERADDRESS = (os.environ['IP'], os.environ["PORT"])
+    SERVERADDRESS = (os.environ['IP'], int(os.environ["PORT"]))
 
 else:
     with open("configuration.json", "r") as config:
