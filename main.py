@@ -27,8 +27,19 @@ INTERVAL = 600.0  # Interval in seconds to check the server
 FIELPATH = "./history.txt"  # Path to the file to save the history
 
 
+def get_last_10_maps():
+    with open(FIELPATH, "r") as file:
+        return file.readlines()[-10:]
+
+
+def get_current_map():
+    with open(FIELPATH, "r") as file:
+        return file.readlines()[-1]
+
+
 bot = commands.Bot(PREFIX)
-last_map: str = ""
+
+last_map: str = get_current_map().strip("\n")
 
 
 @bot.event
@@ -91,16 +102,6 @@ async def update_staticEmbed():
     embed.set_footer(text="by immervoll")
     embed.timestamp = datetime.now()
     await message.edit(embed=embed)
-
-
-def get_last_10_maps():
-    with open(FIELPATH, "r") as file:
-        return file.readlines()[-10:]
-
-
-def get_current_map():
-    with open(FIELPATH, "r") as file:
-        return file.readlines()[-1]
 
 
 @bot.command(name="history", aliases=["maps"])
