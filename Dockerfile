@@ -12,6 +12,6 @@ WORKDIR /usr/src/maphistory-bot/
 
 COPY ./ ./
 RUN pip install -r ./requirements.txt
-RUN touch ./history.txt
+RUN echo "\n" > ./history.txt
 
 CMD [ "python", "./main.py" ]
