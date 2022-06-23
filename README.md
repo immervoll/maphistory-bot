@@ -80,7 +80,8 @@ gh repo clone immervoll/maphistory-bot
     "SERVER": {
         "IP": "",
         "PORT": 27165
-    }
+    },
+    "INTERVAL": 600.0
 }
 ```
 

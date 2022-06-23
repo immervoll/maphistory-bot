@@ -15,6 +15,7 @@ if is_docker():
     TOKEN = os.environ['TOKEN']
     PREFIX = os.environ['PREFIX']
     SERVERADDRESS = (os.environ['IP'], int(os.environ["PORT"]))
+    INTERVAL = float(os.environ['INTERVAL'])
 
 else:
     with open("configuration.json", "r") as config:
@@ -22,8 +23,8 @@ else:
         TOKEN = DATA["TOKEN"]
         PREFIX = DATA["PREFIX"]
         SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
+        INTERVAL = DATA["INTERVAL"]
 
-INTERVAL = 600.0  # Interval in seconds to check the server
 FIELPATH = "./history.txt"  # Path to the file to save the history
 
 
