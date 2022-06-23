@@ -67,7 +67,7 @@ pip3 install jaraco.docker
 ```
 ### Installation
 
-1. Get a discord Bot free Token at [Discord Developer Portal](https://discord.com/developers/applications)
+1. Get a discord Bot free Token at [Discord Developer Portal](https://discord.com/developers/applications), you can follow [this guide](https://discordpy.readthedocs.io/en/stable/discord.html) by the [Discord.py](https://github.com/Rapptz/discord.py) team
 2. Clone the repo and create a `configuration.json`
 
 ```sh
