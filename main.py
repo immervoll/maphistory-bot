@@ -96,10 +96,10 @@ async def update_staticEmbed():
     embed = discord.Embed(title="Map History", description="", color=0xff0000)
     embed.set_author(name="Map History Bot",
                      url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map", value="".join(
-        get_current_map()), inline=False)
+    embed.add_field(name="📍 Current Map", value=f"""```{"".join(
+        get_current_map())}```""", inline=False)
     embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"{last_10_maps}", inline=False)
+                    value=f"```{last_10_maps}```", inline=False)
     embed.add_field(name="⌚ Last refresh", value=f"<t:{int(time.time())}:R>")
     embed.set_footer(text="by immervoll")
     embed.timestamp = datetime.now()
@@ -113,12 +113,12 @@ async def history(ctx: commands.Context):
     embed = discord.Embed(title="Map History", description="", color=0xff0000)
     embed.set_author(name="Map History Bot",
                      url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map", value="".join(
-        get_current_map()), inline=False)
+    embed.add_field(name="📍 Current Map", value=f"""```{"".join(
+        get_current_map())}```""", inline=False)
     embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"{last_10_maps}", inline=False)
+                    value=f"```{last_10_maps}```", inline=False)
     embed.set_footer(text="by immervoll")
-    await ctx.send(f"{ctx.author.mention} here is the servers map history", embed=embed)
+    await ctx.send(f">>> {ctx.author.mention} here is the servers map history", embed=embed)
 
 
 @bot.command(name="setup",
@@ -136,10 +136,10 @@ async def setup(ctx: commands.Context, *, channelID: int):
     embed = discord.Embed(title="Map History", description="", color=0xff0000)
     embed.set_author(name="Map History Bot",
                      url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map", value="".join(
-        get_current_map()), inline=False)
+    embed.add_field(name="📍 Current Map", value=f"""```{"".join(
+        get_current_map())}```""", inline=False)
     embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"{last_10_maps}", inline=False)
+                    value=f"```{last_10_maps}```", inline=False)
     embed.add_field(name="⌚ Last refresh", value=f"<t:{int(time.time())}:R>")
     embed.set_footer(text="by immervoll")
     embed.timestamp = datetime.now()
