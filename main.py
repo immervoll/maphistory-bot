@@ -25,16 +25,16 @@ else:
         SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
         INTERVAL = DATA["INTERVAL"]
 
-FIELPATH = "./history.txt"  # Path to the file to save the history
+FILEPATH = "./history.txt"  # Path to the file to save the history
 
 
 def get_last_10_maps():
-    with open(FIELPATH, "r") as file:
+    with open(FILEPATH, "r") as file:
         return file.readlines()[-10:]
 
 
 def get_current_map():
-    with open(FIELPATH, "r") as file:
+    with open(FILEPATH, "r") as file:
         return file.readlines()[-1]
 
 
@@ -62,7 +62,7 @@ async def queryServer():
         current_map = query.map_name
 
         if not current_map == last_map:
-            with open(FIELPATH, "a") as file:
+            with open(FILEPATH, "a") as file:
                 file.write(f"{current_map}\n")
                 logging.log(logging.INFO, f"Saved map to File")
                 logging.log(logging.INFO, f"Current map: {current_map}")
