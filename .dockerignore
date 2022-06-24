@@ -4,3 +4,5 @@
 ./readme.md
 ./history.txt
 ./docker-compose.yml
+./embed.pickle
+./Dockerfile
