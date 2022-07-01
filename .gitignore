@@ -365,3 +365,5 @@ docker-compose.yml
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
+.vscode/launch.json
+.vscode/*.json
