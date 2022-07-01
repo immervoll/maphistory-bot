@@ -6,3 +6,5 @@
 ./docker-compose.yml
 ./embed.pickle
 ./Dockerfile
+./history.pickle
+./.*
