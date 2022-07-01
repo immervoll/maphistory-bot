@@ -2,12 +2,11 @@ from jaraco.docker import is_docker
 import json
 from discord.ext import commands, tasks
 import discord
-import a2s
 import logging
 import os
 from datetime import datetime
-import time
 import pickle
+from history import History
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,22 +24,9 @@ else:
         SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
         INTERVAL = DATA["INTERVAL"]
 
-FILEPATH = "./history.txt"  # Path to the file to save the history
-
-
-def get_last_10_maps():
-    with open(FILEPATH, "r") as file:
-        return file.readlines()[-10:]
-
-
-def get_current_map():
-    with open(FILEPATH, "r") as file:
-        return file.readlines()[-1]
-
+HISTORY = History()
 
 bot = commands.Bot(PREFIX)
-
-last_map: str = get_current_map().strip("\n")
 
 
 @bot.event
@@ -52,28 +38,18 @@ async def on_ready():
 
 @tasks.loop(seconds=INTERVAL)
 async def queryServer():
-    global last_map
+
     logging.log(logging.DEBUG, "Entering Query loop")
     try:
         logging.log(
             logging.INFO, f"Connecting to {SERVERADDRESS[0]}:{SERVERADDRESS[1]}")
 
-        query = a2s.info(SERVERADDRESS)
-        current_map = query.map_name
-
-        if not current_map == last_map:
-            with open(FILEPATH, "a") as file:
-                file.write(f"{current_map}\n")
-                logging.log(logging.INFO, f"Saved map to File")
-                logging.log(logging.INFO, f"Current map: {current_map}")
-                logging.log(logging.INFO, f"Last map: {last_map}")
-
-            last_map = current_map
-        else:
-            logging.log(logging.INFO, f"Current map: {current_map}")
+        
+        logging.log(logging.INFO, f"Current map: {HISTORY.query(SERVERADDRESS)}")
+        logging.log(logging.INFO, f"Last map: {HISTORY.getLastMap()}")
 
         try:
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History | {current_map}"))
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History | {HISTORY.getCurrentMap()}"))
         except:
             pass
     except Exception as e:
@@ -86,38 +62,35 @@ async def queryServer():
             pass
 
 
+async def generate_embed():
+    embed = discord.Embed(title=f"Map History for `{HISTORY.getServerName()}`", description="", color=0xff0000)
+    embed.set_author(name="Map History Bot",
+                     url="https://github.com/immervoll/maphistory-bot")
+    embed.add_field(name="📍 Current Map",
+                    value=f"""{HISTORY.getFormattedCurrentMap()}""", inline=False)
+    embed.add_field(name="⌛ Previous Map",
+                    value=f"""{HISTORY.getFormattedLastMap()}""", inline=False)
+    embed.add_field(name="🗺️ Last 10 Maps",
+                    value=f"{HISTORY.getFormattedLast10Maps()}", inline=False)
+    embed.add_field(name="⌚ Last refresh", value=f"<t:{HISTORY.getLastUpdate()}:R>")
+    embed.set_footer(text="by immervoll")
+    return embed
+
+
 async def update_staticEmbed():
     with open('embed.pickle', 'rb') as embedPickleFile:
         staticEmbedInfo = pickle.load(embedPickleFile)
 
     message = await bot.get_channel(staticEmbedInfo[0]).fetch_message(staticEmbedInfo[1])
 
-    last_10_maps = "".join(get_last_10_maps())
-    embed = discord.Embed(title="Map History", description="", color=0xff0000)
-    embed.set_author(name="Map History Bot",
-                     url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map", value=f"""```{"".join(
-        get_current_map())}```""", inline=False)
-    embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"```{last_10_maps}```", inline=False)
-    embed.add_field(name="⌚ Last refresh", value=f"<t:{int(time.time())}:R>")
-    embed.set_footer(text="by immervoll")
-    embed.timestamp = datetime.now()
+    embed = await generate_embed()
     await message.edit(embed=embed)
 
 
 @bot.command(name="history", aliases=["maps"])
 async def history(ctx: commands.Context):
     logging.log(logging.INFO, f"{ctx.author} requested the map history")
-    last_10_maps = "".join(get_last_10_maps())
-    embed = discord.Embed(title="Map History", description="", color=0xff0000)
-    embed.set_author(name="Map History Bot",
-                     url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map", value=f"""```{"".join(
-        get_current_map())}```""", inline=False)
-    embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"```{last_10_maps}```", inline=False)
-    embed.set_footer(text="by immervoll")
+    embed = await generate_embed()
     await ctx.send(f">>> {ctx.author.mention} here is the servers map history", embed=embed)
 
 
@@ -132,17 +105,7 @@ async def setup(ctx: commands.Context, *, channelID: int):
 
     channel = discord.utils.get(bot.get_all_channels(), id=channelID)
 
-    last_10_maps = "".join(get_last_10_maps())
-    embed = discord.Embed(title="Map History", description="", color=0xff0000)
-    embed.set_author(name="Map History Bot",
-                     url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map", value=f"""```{"".join(
-        get_current_map())}```""", inline=False)
-    embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"```{last_10_maps}```", inline=False)
-    embed.add_field(name="⌚ Last refresh", value=f"<t:{int(time.time())}:R>")
-    embed.set_footer(text="by immervoll")
-    embed.timestamp = datetime.now()
+    embed = await generate_embed()
     message = await channel.send(embed=embed)
 
     staticEmbedInfo = [channel.id, message.id]
