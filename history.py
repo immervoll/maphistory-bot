@@ -35,7 +35,6 @@ class History(object):
         self.current_map = map_name
         ctime = int(time.time())
         self.last_10_maps.append((map_name,players,  ctime))
-        self.last_update = ctime
         self.store()
 
     def query(self, serveraddress: tuple):
@@ -46,6 +45,7 @@ class History(object):
         if query.server_name != None:
             self.server_name = query.server_name
             
+        self.last_update = ctime
         return self.getCurrentMap()
 
     def getCurrentMap(self):
