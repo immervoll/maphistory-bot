@@ -45,7 +45,7 @@ class History(object):
         if query.server_name != None:
             self.server_name = query.server_name
             
-        self.last_update = int(time.ctime())
+        self.last_update = int(time.time())
         return self.getCurrentMap()
 
     def getCurrentMap(self):
