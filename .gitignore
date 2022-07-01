@@ -348,13 +348,18 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Project
 configuration.json
 ./configuration.json
-history.txt
-./history.txt
+*.pickle
+
+# Docker
 ./docker-compose.yml
 docker-compose.yml
-*.pickle.vscode/*
+
+# VS Code
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
