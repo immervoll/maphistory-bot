@@ -63,7 +63,7 @@ class History(object):
         return self.last_map
 
     def getLast10Maps(self):
-        return self.last_maps
+        return self.last_maps[-10:]
 
     def getFormattedCurrentMap(self):
         return f"`{self.current_map}` with `{self.last_maps[-1][1]}` players - since: <t:{self.last_maps[-1][2]}:R>"
