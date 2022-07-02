@@ -1,8 +1,9 @@
+import logging
 import pickle
 import os
 import time
 import a2s
-
+import logging
 
 class History(object):
     """History class represents the history of maps played on a server."""
@@ -14,11 +15,18 @@ class History(object):
 
     def __init__(self):
         if os.path.exists("./history.pickle"):
-            with open("./history.pickle", "rb") as historyPickleFile:
-                self.last_maps = pickle.load(historyPickleFile)
-                self.current_map = self.last_maps[-1][0]
-                self.last_map = None
-                self.last_update = self.last_maps[-1][2]
+            try:
+                with open("./history.pickle", "rb") as historyPickleFile:
+                    self.last_maps = pickle.load(historyPickleFile)
+                    self.current_map = self.last_maps[-1][0]
+                    self.last_map = None
+                    self.last_update = self.last_maps[-1][2]
+            except IndexError as e:
+                logging.log(logging.ERROR, f"Couldnt load history.pickle. {e}")
+                self.last_maps = []
+                self.current_map = None
+                self.last_update = int(time.time())
+
         else:
             self.last_maps = []
             self.current_map = None
@@ -26,8 +34,8 @@ class History(object):
 
     def store(self):
 
-        with open("./history.pickle", "wb") as historyPickleFile:
-            pickle.dump(self.last_maps, historyPickleFile)
+            with open("./history.pickle", "wb") as historyPickleFile:
+                pickle.dump(self.last_maps, historyPickleFile)
 
     def writeUpdate(self, map_name, players):
         assert map_name != self.current_map
