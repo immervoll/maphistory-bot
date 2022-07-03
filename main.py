@@ -6,7 +6,9 @@ import logging
 import os
 from datetime import datetime
 import pickle
+from guild import Guild
 from history import History
+import re
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,7 +26,7 @@ else:
         SERVERADDRESS = (DATA["SERVER"]["IP"], DATA["SERVER"]["PORT"])
         INTERVAL = DATA["INTERVAL"]
 
-HISTORY = History()
+GUILDS: list[Guild]
 
 bot = commands.Bot(PREFIX)
 
@@ -40,77 +42,56 @@ async def on_ready():
 async def queryServer():
 
     logging.log(logging.DEBUG, "Entering Query loop")
-    try:
-        logging.log(
-            logging.INFO, f"Connecting to {SERVERADDRESS[0]}:{SERVERADDRESS[1]}")
-
-        
-        logging.log(logging.INFO, f"Current map: {HISTORY.query(SERVERADDRESS)}")
-        logging.log(logging.INFO, f"Last map: {HISTORY.getLastMap()}")
-
+    for guild in GUILDS:
+        this = GUILDS.index(guild)
         try:
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History | {HISTORY.getCurrentMap()}"))
-        except:
-            pass
-    except Exception as e:
-        logging.log(logging.ERROR, f"Couldnt complete a2s query. {e}")
-
-    finally:
-        try:
-            await update_staticEmbed()
-        except:
-            pass
+            logging.log(logging.DEBUG, f"Querying server for {this}")
+            guild.updateEmbeds()
+        except Exception as e:
+            logging.log(logging.ERROR, f"Error in queryServer: {this}\n\n{e}")
 
 
-async def generate_embed():
-    embed = discord.Embed(title=f"Map History for `{HISTORY.getServerName()}`", description="", color=0xff0000)
-    embed.set_author(name="Map History Bot",
-                     url="https://github.com/immervoll/maphistory-bot")
-    embed.add_field(name="📍 Current Map",
-                    value=f"""{HISTORY.getFormattedCurrentMap()}""", inline=False)
-    embed.add_field(name="⌛ Previous Map",
-                    value=f"""{HISTORY.getFormattedLastMap()}""", inline=False)
-    embed.add_field(name="🗺️ Last 10 Maps",
-                    value=f"{HISTORY.getFormattedLast10Maps()}", inline=False)
-    embed.add_field(name="⌚ Last refresh", value=f"<t:{HISTORY.getLastUpdate()}:R>")
-    embed.set_footer(text="by immervoll")
-    return embed
+@bot.group()
+async def setup(ctx):
+    if ctx.invoked_subcommand is None:
+        await ctx.send('Invalid setup command passed...')
 
 
-async def update_staticEmbed():
-    with open('embed.pickle', 'rb') as embedPickleFile:
-        staticEmbedInfo = pickle.load(embedPickleFile)
-
-    message = await bot.get_channel(staticEmbedInfo[0]).fetch_message(staticEmbedInfo[1])
-
-    embed = await generate_embed()
-    await message.edit(embed=embed)
+@setup.command()
+async def guild(ctx):
+    await ctx.send(f"Setting up guild {ctx.guild.name}")
+    pass
 
 
-@bot.command(name="history", aliases=["maps"])
-async def history(ctx: commands.Context):
-    logging.log(logging.INFO, f"{ctx.author} requested the map history")
-    embed = await generate_embed()
-    await ctx.send(f">>> {ctx.author.mention} here is the servers map history", embed=embed)
+@setup.command()
+async def history(ctx, ip: str, port: int):
+    assert re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
+                    ip), "Invalid IP address"
+    assert port > 0 and port < 65536, "Invalid port"
+    await ctx.send(f"Setting up history for {ip}:{port}")
+    pass
 
 
-@bot.command(name="setup",
-             aliases=["set"],
-             usage="!setup <channel> - sets up a the channel to host the perma history info",
-             description="sets up a channel to host a self updating embed showing the server history")
-@commands.guild_only()
-@commands.has_permissions(administrator=True)
-@commands.cooldown(1, 2, commands.BucketType.member)
-async def setup(ctx: commands.Context, *, channelID: int):
+@setup.command()
+async def embed(ctx, channel: discord.TextChannel, historyid: int):
+    await ctx.send(f"Setting up embed for {channel.name} with history {historyid}")
+    pass
 
-    channel = discord.utils.get(bot.get_all_channels(), id=channelID)
 
-    embed = await generate_embed()
-    message = await channel.send(embed=embed)
+@setup.command()
+async def show(ctx):
+    await ctx.send(f"Showing setup")
+    pass
 
-    staticEmbedInfo = [channel.id, message.id]
-    with open('embed.pickle', 'wb') as embedPickleFile:
-        pickle.dump(staticEmbedInfo, embedPickleFile)
 
-    await ctx.send(f"Set up embed in {channel.mention}")
+@setup.command()
+async def guide(ctx):
+    await ctx.send(f"Setup guide")
+    pass
+
+
+@setup.command()
+async def clear(ctx):
+    await ctx.send(f"Clearing setup for guild {ctx.guild.name}")
+    pass
 bot.run(TOKEN)
