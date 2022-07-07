@@ -14,9 +14,9 @@ class History(object):
     last_update: int
 
     def __init__(self):
-        try:
-            self.loadFromPickle()
-        except:
+       # try:
+       #     self.loadFromPickle()
+       # except:
             self.last_maps = []
             self.current_map = None
             self.last_update = int(time.time())

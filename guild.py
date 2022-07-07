@@ -42,7 +42,12 @@ class Guild(discord.Guild):
     def removeHistory(self, history: History):
         self.histories.remove(history)
         return True
-
+    
+    def hasHistory(self, ip: str, port: int):
+        for history in self.histories:
+            if history.ip == ip and history.port == port:
+                return True
+    
     def removeHistoryByID(self, historyid: int):
         self.histories.pop(historyid)
         return True

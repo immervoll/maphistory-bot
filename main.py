@@ -29,14 +29,28 @@ else:
 GUILDS: list[Guild]
 
 bot = commands.Bot(PREFIX)
+# HELPERS:
 
+async def isInGuild(ctx):
+    return ctx.guild in GUILDS
+
+
+# BOT LISTENERS & EVENTS
 
 @bot.event
 async def on_ready():
     logging.log(logging.INFO, f"We have logged in as {bot.user}")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Map History"))
     queryServer.start()
+    
 
+@bot.listener()
+async def on_error(ctx,  error:str, *args, **kwargs):
+    if isinstance(error, AssertionError):
+        await ctx.send(f"```Error: {error}```")
+
+
+# BOT LOOPS
 
 @tasks.loop(seconds=INTERVAL)
 async def queryServer():
@@ -50,6 +64,7 @@ async def queryServer():
         except Exception as e:
             logging.log(logging.ERROR, f"Error in queryServer: {this}\n\n{e}")
 
+# BOT COMMANDS 
 
 @bot.group()
 async def setup(ctx):
@@ -59,7 +74,9 @@ async def setup(ctx):
 
 @setup.command()
 async def guild(ctx):
-    await ctx.send(f"Setting up guild {ctx.guild.name}")
+    if ctx.guild.id not in [guild.id for guild in GUILDS]:
+        GUILDS.append(Guild(ctx.guild))
+        await ctx.send(f"set up {ctx.guild.name}. You can now use the commands in this guild.")
     pass
 
 
@@ -68,6 +85,9 @@ async def history(ctx, ip: str, port: int):
     assert re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
                     ip), "Invalid IP address"
     assert port > 0 and port < 65536, "Invalid port"
+    assert await isInGuild(ctx), "Guild is not setup"
+    assert not GUILDS[GUILDS.index(ctx.guild)].hasHistory(ip, port), "History already setup"
+    GUILDS.addHistory(History(ip, port))
     await ctx.send(f"Setting up history for {ip}:{port}")
     pass
 
@@ -94,4 +114,6 @@ async def guide(ctx):
 async def clear(ctx):
     await ctx.send(f"Clearing setup for guild {ctx.guild.name}")
     pass
+
+
 bot.run(TOKEN)
